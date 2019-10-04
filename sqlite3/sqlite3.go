@@ -864,6 +864,24 @@ func (s *Stmt) Bind(args ...interface{}) error {
 	return nil
 }
 
+func (s *Stmt) BindString(v string, index int) error {
+	// the leftmost SQL parameter has an index of 1
+	rc := C.bind_text(s.stmt, C.int(index+1), cStr(v), C.int(len(v)), 1)
+	if rc != OK {
+		return errStr(rc)
+	}
+	return nil
+}
+
+func (s *Stmt) BindInt(v int, index int) error {
+  // the leftmost SQL parameter has an index of 1
+  rc := C.sqlite3_bind_int64(s.stmt, C.int(index+1), C.sqlite3_int64(v))
+  if rc != OK {
+    return errStr(rc)
+  }
+  return nil
+}
+
 // Scan retrieves data from the current row, storing successive column values
 // into successive arguments. The same row may be scanned multiple times. Nil
 // arguments are silently skipped.
